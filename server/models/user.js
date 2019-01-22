@@ -17,7 +17,7 @@ var User = mongoose.model('User',{
   },
   lastUpdated:{
     type:Number,
-    default:Date.now()
+    default:Date.now
   }
 });
 
