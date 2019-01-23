@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 
 var {mongoose} = require('./db/mongoose');
+var {ObjectId} = require('mongodb');
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
 
@@ -29,6 +30,34 @@ app.get('/todos',(req, res)=>{
   },(e)=>{
     res.status(400).send(e);
   });
+});
+
+// Get the entry by ObjectId
+app.get('/todos/:id',(req,res)=>{
+  let id = req.params.id;
+  var resObj = {
+    requestedId:id,
+    requestIdValid:false,
+    foundObject:false,
+    object:null,
+  }
+  if(!ObjectId.isValid(id)){
+    res.status(404).send(resObj)
+  } else {
+    resObj.requestIdValid = true;
+    User
+    .findById(id)
+    .then((user)=>{
+      if(user){
+        resObj.foundObject=true;
+      }
+      resObj.object=user;
+      res.send(resObj);
+    })
+    .catch((e)=>{
+      res.status(400).send();
+    });
+  };
 });
 
 app.listen(port, ()=>{
