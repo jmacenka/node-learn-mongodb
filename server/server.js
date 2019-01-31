@@ -42,7 +42,7 @@ app.get('/todos/:id',(req,res)=>{
     object:null,
   }
   if(!ObjectId.isValid(id)){
-    res.status(404).send(resObj)
+    return res.status(404).send(resObj)
   } else {
     resObj.requestIdValid = true;
     User
@@ -56,6 +56,35 @@ app.get('/todos/:id',(req,res)=>{
     })
     .catch((e)=>{
       res.status(400).send();
+    });
+  };
+});
+
+app.delete('/todos/:id',(req, res)=>{
+  let id = req.params.id;
+  var resObj = {
+    requestedId:id,
+    requestIdValid:false,
+    foundObject:false,
+    object:null,
+  }
+  if (!ObjectId.isValid(id)){
+    return res.status(404).send(resObj);
+  } else {
+    resObj['requestIdValid'] = true;
+    Todo
+    .findByIdAndDelete(id)
+    .then((todo)=>{
+      res.status(404);
+      if (todo){
+        resObj.foundObject = true;
+        console.log(`Deleted Object ${todo}`);
+        res.status(200);
+      };
+      resObj.object = todo;
+      res.send(resObj);
+    }).catch((e)=>{
+      res.status(404).send()
     });
   };
 });
